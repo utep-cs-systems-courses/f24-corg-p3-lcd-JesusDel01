@@ -6,12 +6,13 @@
 #include "lcddraw.h"
 #include "buzzer.h"
 
+extern void button4If(void);
 extern char lives;
 static short start = 0;
-static short pause = 0;
+short pause = 0;
 static char cycle = 0;
 static char button1 = 0;
-static char button4 = 0;
+char button4 = 0;
 
 #define CYCLE_THRESHOLD 30
 
@@ -79,10 +80,11 @@ void __interrupt_vec(PORT2_VECTOR) Port_2() {
     fillRectangle(20, 90, 93, 15, COLOR_CYAN);  //remove the "2 to STart block"
   }
   if (P2IFG & BIT3) {                           //button 4
-    P2IFG &= ~BIT3;
+    /* P2IFG &= ~BIT3;
     pause = 1;
     button4 = 1;
-    moveBird(-1);
+    moveBird(-1);*/
+    button4If();
   }
 }
 
