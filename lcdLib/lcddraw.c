@@ -37,6 +37,16 @@ void fillRectangle(u_char colMin, u_char rowMin, u_char width, u_char height,
   }
 }
 
+void fillCircle(short centerX, short centerY, short radius, u_int colorBGR) {    // i added this function 
+  for (short y = -radius; y <= radius; y++) {
+    for (short x = -radius; x <= radius; x++){
+      if (x * x + y * y <= radius * radius) {               //check if (x, y) is within the circle
+        drawPixel(centerX + x, centerY + y, colorBGR);
+      }
+    }
+  }
+}
+
 /** Clear screen (fill with color)
  *  
  *  \param colorBGR The color to fill screen
@@ -113,5 +123,39 @@ void drawRectOutline(u_char colMin, u_char rowMin, u_char width, u_char height,
   /**< left & right */
   fillRectangle(colMin, rowMin, 1, height, colorBGR);
   fillRectangle(colMin + width, rowMin, 1, height, colorBGR);
+}
+
+
+void drawChar8x12(u_char rcol, u_char rrow, char c, 
+                  u_int fgColorBGR, u_int bgColorBGR) 
+{
+  u_char col = 0;
+  u_char row = 0;
+  u_char bit = 0x80;
+  u_char oc = c - 0x20;
+
+  lcd_setArea(rcol, rrow, rcol + 7, rrow + 11); // relative to requested col/row
+  while (row < 12) {
+    u_char byte = font_8x12[oc][row];
+    while (col < 8) {
+      u_int colorBGR = (byte & bit) ? fgColorBGR : bgColorBGR;
+      lcd_writeColor(colorBGR);
+      byte <<= 1;
+      col++;
+    }
+    col = 0;
+    row++;
+  }
+}
+
+
+void drawString8x12(u_char col, u_char row, char *string,
+                    u_int fgColorBGR, u_int bgColorBGR) 
+{
+  u_char cols = col;
+  while (*string) {
+    drawChar8x12(cols, row, *string++, fgColorBGR, bgColorBGR);
+    cols += 9; 
+  }
 }
 
